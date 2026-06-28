@@ -1,0 +1,246 @@
+1. Remove Linked List Elements dùng dummy 
+
+Nếu node đầu (head) cũng có giá trị cần xóa thì sẽ phức tạp khi cập nhật lại head
+
+Để xử lý gọn gàng ta dùng một dummy node trỏ tới head
+
+Duyệt danh sách bằng con trỏ curr:
+
+Nếu curr.next.val == val thì bỏ node đó bằng cách nối curr.next = curr.next.next
+
+Ngược lại thì di chuyển curr sang node tiếp theo
+
+Cuối cùng trả về dummy.next làm head mới
+
+-Tránh phải viết riêng trường hợp head bị xóa
+
+Độ phức tạp O(n) thời gian, O(1) không gian thì tối ưu nhất
+
+-Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode removeElements(ListNode head, int val) {
+        // Tạo dummy node để xử lý trường hợp head bị xóa
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode curr = dummy;
+        
+        // Duyệt danh sách
+        while (curr.next != null) {
+            if (curr.next.val == val) {
+                // Nếu node kế tiếp có giá trị cần xóa thì bỏ nó
+                curr.next = curr.next.next;
+            } else {
+                // Nếu không thì di chuyển tiếp
+                curr = curr.next;
+            }
+        }
+        
+        return dummy.next; // head mới sau khi xóa
+    }
+}
+
+2.Palindrome Linked List dùng slow và fast pointer để tìm giữa danh sách, sau đó đảo ngược nửa sau và so sánh với nửa đầu
+
+-Đáp ứng yêu cầu follow-up O(n) thời gian, O(1) không gian
+
+Không cần cấu trúc dữ liệu phụ như mảng hay stack
+
+Chỉ duyệt tối đa 2 lần linked list
+
+-Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) return true;
+        
+        // Tìm giữa danh sách bằng slow & fast pointer
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        // Đảo ngược nửa sau danh sách
+        ListNode prev = null, curr = slow;
+        while (curr != null) {
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        
+        // So sánh nửa đầu và nửa sau
+        ListNode p1 = head, p2 = prev;
+        while (p2 != null) {
+            if (p1.val != p2.val) return false;
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        
+        return true;
+    }
+}
+
+3.Remove Duplicates from Sorted List dùng một con trỏ curr để duyệt danh sách
+
+Vì danh sách đã sorted, các phần tử trùng lặp sẽ luôn nằm cạnh nhau
+
+Nếu curr.val == curr.next.val thì bỏ node trùng bằng cách nối curr.next = curr.next.next
+
+Ngược lại thì di chuyển curr sang node tiếp theo
+
+-Không cần dùng HashSet hay mảng để lưu giá trị đã gặp
+
+Chỉ duyệt một lần tối ưu O(n) thời gian, O(1) không gian
+
+-Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode curr = head;
+        
+        // Duyệt danh sách
+        while (curr != null && curr.next != null) {
+            if (curr.val == curr.next.val) {
+                // Nếu trùng thì bỏ node kế tiếp
+                curr.next = curr.next.next;
+            } else {
+                // Nếu không trùng thì di chuyển tiếp
+                curr = curr.next;
+            }
+        }
+        
+        return head;
+    }
+}
+
+4.HTTP Methods là các cách để client (browser, mobile app,...) yêu cầu server thực hiện một hành động. Trong REST API có 4 phương thức quan trọng nhất:
+
+Get có chức năng lấy (đọc) dữ liệu từ server
+
+Post có chức năng tạo dữ liệu mới trên server
+
+Put có chức năng cập nhật dữ liệu
+
+Delete có chức năng xoá dữ liệu khỏi server
+
+5.HTTP Status Code là mã trạng thái gồm 3 chữ số được server trả về sau khi nhận request, giúp client biết request thành công, thất bại hay gặp lỗi
+
+-Ta có 5 nhóm HTTP Status Code là:
+
+1xx  ý nghĩa Informational – Đã nhận request, đang xử lý (ít dùng)
+
+2xx ý nghĩa Success – Request thành công
+
+3xx ý nghĩa Redirection – Chuyển hướng
+
+4xx ý nghĩa Client Error – Lỗi từ phía client
+
+5xx ý nghĩa Server Error – Lỗi từ phía server
+
+-Các HTTP quan trọng:
+
+200 có nghĩa là thành công, trả về dữ liệu
+
+201 có nghĩa là tạo mới thành công
+
+204 có nghĩa là thành công, không có dữ liệu trả về
+
+400 có nghĩa là eequest sai
+
+401 có nghĩa là chưa được xác thực
+
+404 có nghĩa là không tìm thấy tài nguyên
+
+500 có nghĩa là lỗi server
+
+503 có nghĩa là Server tạm thời không khả dung
+
+6.HTTP Request là thông điệp mà client gửi đến server để yêu cầu thực hiện một hành động. Mỗi request đều có cấu trúc chuẩn gồm các thành phần sau:
+
++Request Line
+
+Gồm 3 thành phần:
+
+HTTP Method: GET, POST, PUT, DELETE,...
+
+Resource Path: Đường dẫn tài nguyên (VD: /users, /products)
+
+HTTP Version: Phiên bản giao thức HTTP
+
++Headers
+
+Chứa các thông tin mô tả request, ví dụ:
+
+Loại dữ liệu gửi lên (Content-Type)
+
+Loại dữ liệu mong muốn nhận về (Accept)
+
+Thông tin xác thực (Authorization)
+
+Cookies, ngôn ngữ, độ dài dữ liệu,...
+
++Body (tùy chọn)
+
+Chứa dữ liệu mà client gửi lên server
+
+Thường xuất hiện trong:
+
+POST để tạo dữ liệu mới
+
+PUT/PATCH để cập nhật dữ liệu
+
+GET thường không có Body vì chỉ dùng để lấy dữ liệu
+
++Query Parameters
+
+Là các tham số gắn vào URL để:
+
+Lọc dữ liệu
+
+Tìm kiếm
+
+Phân trang
+
+Tùy chỉnh kết quả
+
+-Server xử lý Request theo trình tự sau
+
+Đọc HTTP Method và Resource Path
+
+Đọc Headers để hiểu ngữ cảnh request
+
+Nếu có Body, phân tích dữ liệu và thực hiện xử lý
+
+Trả về HTTP Response
