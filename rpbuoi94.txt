@@ -1,0 +1,220 @@
+1.Convert Binary Number in a Linked List to Integer duyệt linked list từ đầu đến cuối
+
+Với mỗi node, dịch trái kết quả hiện tại (nhân 2) rồi cộng thêm giá trị node
+
+-Không cần mảng hay chuỗi để lưu trữ
+
+Chỉ duyệt một lần tối ưu về O(n) thời gian
+
+Không dùng thêm bộ nhớ phụ tối ưu về O(1) không gian
+
+-Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public int getDecimalValue(ListNode head) {
+        int result = 0;
+        ListNode curr = head;
+        
+        // Duyệt danh sách
+        while (curr != null) {
+            result = result * 2 + curr.val; // dịch trái + cộng thêm bit hiện tại
+            curr = curr.next;
+        }
+        
+        return result;
+    }
+}
+
+2.HashSet thường được cài đặt bằng hash table
+
+Ta sẽ dùng mảng danh sách (bucket array), mỗi bucket là một LinkedList để xử lý collision (trùng hash)
+
+Hàm băm đơn giản: index = key % size
+
+Khi thêm, xóa, kiểm tra thì ta chỉ thao tác trong bucket tương ứng
+
+-Đảm bảo các thao tác trung bình O(1).
+
+Dùng LinkedList để xử lý collision theo phương pháp separate chaining
+
+-Code:
+
+import java.util.*;
+
+class MyHashSet {
+    // Kích thước mảng bucket
+    private final int SIZE = 1000;
+    private List<Integer>[] buckets;
+    
+    public MyHashSet() {
+        buckets = new LinkedList[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            buckets[i] = new LinkedList<>();
+        }
+    }
+    
+    // Hàm băm
+    private int hash(int key) {
+        return key % SIZE;
+    }
+    
+    // Thêm phần tử
+    public void add(int key) {
+        int index = hash(key);
+        if (!buckets[index].contains(key)) {
+            buckets[index].add(key);
+        }
+    }
+    
+    // Xóa phần tử
+    public void remove(int key) {
+        int index = hash(key);
+        buckets[index].remove((Integer) key);
+    }
+    
+    // Kiểm tra tồn tại
+    public boolean contains(int key) {
+        int index = hash(key);
+        return buckets[index].contains(key);
+    }
+}
+
+3.Design HashMap HashMap thường được cài đặt bằng hash table.
+
+Ta sẽ dùng mảng bucket, mỗi bucket là một LinkedList chứa các cặp (key, value) để xử lý collision (trùng hash)
+
+Hàm băm đơn giản: index = key % size
+
+Khi thêm, xóa, lấy giá trị thì ta chỉ thao tác trong bucket tương ứng
+
+-Đảm bảo các thao tác trung bình O(1)
+
+Dùng LinkedList để xử lý collision theo phương pháp separate chaining
+
+-Code:
+
+import java.util.*;
+
+class MyHashMap {
+    // Kích thước mảng bucket
+    private final int SIZE = 1000;
+    private List<int[]>[] buckets;
+    
+    public MyHashMap() {
+        buckets = new LinkedList[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            buckets[i] = new LinkedList<>();
+        }
+    }
+    
+    // Hàm băm
+    private int hash(int key) {
+        return key % SIZE;
+    }
+    
+    // Thêm hoặc cập nhật giá trị
+    public void put(int key, int value) {
+        int index = hash(key);
+        for (int[] pair : buckets[index]) {
+            if (pair[0] == key) {
+                pair[1] = value; // cập nhật nếu key đã tồn tại
+                return;
+            }
+        }
+        buckets[index].add(new int[]{key, value}); // thêm mới
+    }
+    
+    // Lấy giá trị
+    public int get(int key) {
+        int index = hash(key);
+        for (int[] pair : buckets[index]) {
+            if (pair[0] == key) {
+                return pair[1];
+            }
+        }
+        return -1; // không tìm thấy
+    }
+    
+    // Xóa key
+    public void remove(int key) {
+        int index = hash(key);
+        Iterator<int[]> it = buckets[index].iterator();
+        while (it.hasNext()) {
+            int[] pair = it.next();
+            if (pair[0] == key) {
+                it.remove();
+                return;
+            }
+        }
+    }
+}
+
+4.REST Message là đơn vị giao tiếp (communication unit) được trao đổi giữa Client và Server khi sử dụng REST API
+
+Request Message (Client đến Server)
+
+Request Line: HTTP Method + URL (Path) + HTTP Version
+
+Headers: Thông tin bổ sung (Content-Type, Authorization,...)
+
+Body (tùy chọn): Payload (dữ liệu gửi lên server)
+
+Query Parameters (nếu có): Tham số lọc, tìm kiếm, phân trang
+
+-Response Message (Server về Client)
+
+Status Line: HTTP Version + Status Code + Status Message
+
+Headers: Thông tin về response
+
+Body (tùy chọn): Payload (dữ liệu trả về)
+
+Cookies (nếu có)
+
+5.Stateless là một nguyên tắc cốt lõi của REST API, nghĩa là server không lưu trạng thái (state) của client giữa các request
+
+Mỗi request được xử lý độc lập và phải chứa đầy đủ thông tin để server xử lý
+
+-Đặc điểm của Stateless
+
+Server không nhớ các request trước đó
+
+Mỗi request được xem như một request hoàn toàn mới
+
+Client phải gửi đầy đủ thông tin cần thiết (token, tham số, dữ liệu,...) trong mọi request
+
+-Scalability (Khả năng mở rộng)
+
+Server không lưu session
+
+Bất kỳ server nào cũng có thể xử lý request
+
+Dễ mở rộng hệ thống (Load Balancing, Microservices, Cloud)
+
+-Reliability (Độ tin cậy)
+
+Nếu một server gặp sự cố, server khác có thể tiếp tục xử lý
+
+Không cần đồng bộ session giữa các server
+
+-Stateless không có nghĩa là không có state
+
+Client chịu trách nhiệm gửi lại state trong mỗi request
+
+-Mỗi API Endpoint phải xử lý request độc lập
+
+Không phụ thuộc vào dữ liệu của các request trước
+
+Dễ cache vì response chỉ phụ thuộc vào request hiện tại
+
+Hiệu năng và khả năng mở rộng tốt hơn
