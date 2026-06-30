@@ -1,0 +1,213 @@
+1.Intersection of Two Linked Lists dùng two pointers pA và pB
+
+Duyệt song song mỗi bước đi một node
+
+Khi pA hết danh sách A chuyển sang head của B. Khi pB hết danh sách B chuyển sang head của A
+
+Nếu hai danh sách giao nhau cuối cùng pA và pB sẽ gặp nhau tại node giao. Nếu không cả hai sẽ cùng thành null
+
+-Đảm bảo cả hai con trỏ duyệt đúng tổng số bước bằng nhau (lenA + lenB)
+
+Không cần tính độ dài trước, không cần HashSet
+
+Độ phức tạp O(n + m) thời gian, O(1) không gian
+
+-Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) return null;
+        
+        ListNode pA = headA;
+        ListNode pB = headB;
+        
+        // Duyệt song song, đổi danh sách khi hết
+        while (pA != pB) {
+            pA = (pA == null) ? headB : pA.next;
+            pB = (pB == null) ? headA : pB.next;
+        }
+        
+        // Nếu có giao nhau → trả về node giao
+        // Nếu không thì cả hai cùng null
+        return pA;
+    }
+}
+
+2.Middle of the Linked List dùng Slow và Fast pointer
+
+slow đi 1 bước, fast đi 2 bước
+
+Khi fast hết danh sách, slow sẽ đứng ở giữa
+
+Ưu điểm chỉ duyệt 1 lần, không cần tính độ dài
+
+-Chỉ duyệt một lần tối ưu về O(n) thời gian
+
+Không dùng thêm bộ nhớ tối ưu về O(1) không gian
+
+-Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode middleNode(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        
+        // slow đi 1 bước, fast đi 2 bước
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        // Khi fast hết thì slow ở giữa
+        return slow;
+    }
+}
+
+3.Delete Node in a Linked List thay vì xóa trực tiếp node này ta copy giá trị từ node kế tiếp vào node hiện tại rồi bỏ node kế tiếp
+
+Cụ thể:
+
+node.val = node.next.val
+
+node.next = node.next.next
+
+-Vì ta không có head nên không thể tìm node trước để bỏ liên kết
+
+Độ phức tạp O(1) thời gian, O(1) không gian
+
+-Code:
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public void deleteNode(ListNode node) {
+        // Copy giá trị từ node kế tiếp vào node hiện tại
+        node.val = node.next.val;
+        // Bỏ node kế tiếp
+        node.next = node.next.next;
+    }
+}
+
+4.HTTP Response là thông điệp mà server trả về cho client sau khi xử lý một HTTP Request. Mọi HTTP Response đều có cấu trúc chuẩn gồm các thành phần sau:
+
+Status Line có chức năng cho biết kết quả xử lý request
+
+Response Header có chức năng cung cấp thông tin bổ sung về response
+
+Body có chức năng chứa dữ liệu trả về cho client
+
+Cookie có chức năng lưu thông tin phiên làm việc hoặc xác thực
+
+-Status Line gồm 3 thành phần:
+
+HTTP Version
+
+Status Code
+
+Status Message
+
+-Response Headers chứa các thông tin mô tả response, ví dụ:
+
+Loại dữ liệu trả về (Content-Type)
+
+Kích thước dữ liệu (Content-Length)
+
+Cache (Cache-Control)
+
+Bảo mật (CORS, Security Headers)
+
+Cookies (Set-Cookie)
+
+-Body (tùy chọn)
+
+Chứa dữ liệu mà server trả về
+
+Thường là:
+
+JSON (phổ biến nhất trong REST API)
+
+HTML
+
+File, hình ảnh hoặc dữ liệu nhị phân
+
+Thông báo lỗi
+
+
+Một số response (ví dụ DELETE trả về 204 No Content) không có Body
+
+-Cookies (tùy chọn)
+
+Server có thể gửi Cookies để:
+
+Quản lý phiên đăng nhập (Session)
+
+Lưu tùy chọn người dùng
+
+Hỗ trợ xác thực (Authentication)
+
+-Client xử lý Response như sau:
+
+Đọc Status Code để biết request thành công hay thất bại
+
+
+Đọc Headers để biết cách xử lý dữ liệu
+
+Nếu có Body, lấy dữ liệu sử dụng
+
+Nếu có Cookies, lưu lại khi cần
+
+5.Payload là dữ liệu thực sự (actual data) nằm trong Body của một HTTP Request hoặc Response
+
+Đây là phần dữ liệu mà client gửi cho server hoặc server trả về cho client để xử lý
+
+Request Payload	là dữ liệu client gửi lên server
+
+Response Payload là dữ liệu server trả về client
+
+-Các định dạng Payload phổ biến
+
+JSON (phổ biến nhất)
+
+XML
+
+Form Data
+
+Binary Data
+
+File (Image, PDF,...)
+
+Vai trò của Payload
+
+Validation: Kiểm tra dữ liệu đầu vào có hợp lệ không
+
+Performance: Payload càng nhỏ thì truyền nhanh hơn, tốn ít băng thông hơn
+
+Security: Cần kiểm tra và xác thực payload để tránh dữ liệu độc hại hoặc sai định dạng
+
