@@ -1,0 +1,184 @@
+1.Maximum Depth of Binary Tree với mỗi node độ sâu = 1 + max(depth(left), depth(right))
+
+Nếu node rỗng thì độ sâu = 0
+
+-Trực tiếp biểu diễn định nghĩa độ sâu
+
+Độ phức tạp O(n) thời gian, O(h) không gian (h là chiều cao cây, do stack recursion)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if (root == null) return 0; // cây rỗng
+        int leftDepth = maxDepth(root.left);
+        int rightDepth = maxDepth(root.right);
+        return 1 + Math.max(leftDepth, rightDepth);
+    }
+}
+
+
+2.Invert Binary Tree với mỗi node, ta hoán đổi left và right
+
+Sau đó gọi đệ quy cho left và right
+
+-Trực tiếp biểu diễn ý tưởng đảo cây
+
+Độ phức tạp O(n) thời gian, O(h) không gian (h là chiều cao cây, do stack recursion)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null) return null;
+        
+        // Hoán đổi left và right
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+        
+        // Đệ quy cho left và right
+        invertTree(root.left);
+        invertTree(root.right);
+        
+        return root;
+    }
+}
+
+
+3.Diameter of Binary Tree với mỗi node, đường kính lớn nhất đi qua node đó = depth(left) + depth(right)
+
+Ta cần duyệt toàn bộ cây tính depth của từng node đồng thời cập nhật giá trị diameter lớn nhất
+
+Dùng DFS recursion để tính depth và cập nhật diameter
+
+-Cho phép ta vừa tính depth vừa cập nhật diameter trong một lần duyệt
+
+Độ phức tạp O(n) thời gian, O(h) không gian (h là chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private int diameter = 0;
+    
+    public int diameterOfBinaryTree(TreeNode root) {
+        depth(root);
+        return diameter;
+    }
+    
+    // Hàm tính độ sâu của node
+    private int depth(TreeNode node) {
+        if (node == null) return 0;
+        
+        int leftDepth = depth(node.left);
+        int rightDepth = depth(node.right);
+        
+        // Cập nhật diameter tại node hiện tại
+        diameter = Math.max(diameter, leftDepth + rightDepth);
+        
+        // Trả về độ sâu của node
+        return 1 + Math.max(leftDepth, rightDepth);
+    }
+}
+
+4.Resource là đối tượng hoặc dữ liệu mà hệ thống cần quản lý thông qua REST API
+
+Mỗi Resource có thể được tạo, đọc, cập nhật hoặc xóa (CRUD)
+
+-Resource có thể mô tả bằng dữ liệu, mỗi resource nên có 1 id duy nhất,	 có thể thực hiện crud
+
+-Sub Resource là Resource thuộc về một Resource khác
+
+5.URL (URI) là địa chỉ dùng để truy cập hoặc thao tác với Resource trong REST API
+
+-URL chỉ mô tả Resource, còn hành động do HTTP Method quyết định
+
+-Collection luôn dùng số nhiều.
+
+-ID của Resource nằm trong URL
+
+-Nếu một Resource thuộc về Resource khác thì dùng đường dẫn lồng nhau
+
+-REST URL nên đơn giản, dễ hiểu và nhất quán
+
+6.Trong REST API, Resource (User, Product, Order,...) được truy cập qua Endpoint (URL) và thao tác bằng HTTP Method
+
+Mỗi HTTP Method tương ứng với một hành động cụ thể trên Resource
+
+-GET:
+
+Chỉ lấy dữ liệu, không thay đổi dữ liệu trên server
+
+Có thể gọi nhiều lần mà kết quả không thay đổi
+
+-POST:
+
+Dùng để tạo Resource mới
+
+Gửi dữ liệu trong Request Body
+
+Gửi cùng một request nhiều lần có thể tạo nhiều Resource giống nhau
+
+-PUT:
+
+Thay thế toàn bộ Resource
+
+Client phải gửi đầy đủ thông tin của Resource
+
+-PATCH:
+
+Chỉ cập nhật các trường cần thay đổi
+
+Không cần gửi toàn bộ Resource
+
+-DELETE:
+
+Xóa Resource khỏi hệ thống
+
+Gọi nhiều lần vẫn cho kết quả như nhau (Resource đã bị xóa)
+
