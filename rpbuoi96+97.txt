@@ -1,0 +1,368 @@
+1.Balanced Binary Tree dùng DFS recursion để tính độ sâu của mỗi node
+
+Trong quá trình tính, kiểm tra chênh lệch độ sâu
+
+Nếu phát hiện node nào mất cân bằng thì trả về -1 để báo hiệu
+
+-Tránh phải duyệt cây nhiều lần
+
+Kết hợp tính depth và kiểm tra balance trong một lần duyệt
+
+Độ phức tạp O(n) thời gian, O(h) không gian (h là chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        return checkDepth(root) != -1;
+    }
+    
+    // Hàm tính độ sâu, trả về -1 nếu mất cân bằng
+    private int checkDepth(TreeNode node) {
+        if (node == null) return 0;
+        
+        int left = checkDepth(node.left);
+        if (left == -1) return -1; // cây con trái mất cân bằng
+        
+        int right = checkDepth(node.right);
+        if (right == -1) return -1; // cây con phải mất cân bằng
+        
+        if (Math.abs(left - right) > 1) return -1; // chênh lệch > 1 → mất cân bằng
+        
+        return 1 + Math.max(left, right); // trả về độ sâu
+    }
+}
+
+2.Same Tree dùng DFS recursion để duyệt đồng thời cả hai cây
+
+Với mỗi cặp node (p, q):
+
+Nếu cả hai đều null thì giống nhau
+
+Nếu một null, một cái không thì khác nhau
+
+Nếu giá trị khác nhau thì khác nhau
+
+Nếu giống nhau thì tiếp tục kiểm tra cây con trái và cây con phải
+
+-Trực tiếp biểu diễn định nghĩa “same tree”
+
+Độ phức tạp O(n) thời gian, O(h) không gian (h là chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        // Nếu cả hai node đều null thì giống nhau
+        if (p == null && q == null) return true;
+        
+        // Nếu một null, một cái không thì khác nhau
+        if (p == null || q == null) return false;
+        
+        // Nếu giá trị khác nhau thì khác nhau
+        if (p.val != q.val) return false;
+        
+        // Kiểm tra cây con trái và cây con phải
+        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
+}
+
+3.Subtree of Another Tree duyệt toàn bộ cây root
+
+Với mỗi node trong root, kiểm tra xem cây con tại node đó có giống subRoot không
+
+Để kiểm tra giống nhau thì dùng hàm phụ isSameTree
+
+-Kết hợp hai bài toán: duyệt cây + so sánh cây
+
+Độ phức tạp O(n × m) trong trường hợp xấu nhất (n = số node của root, m = số node của subRoot)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+        if (root == null) return false;
+        
+        // Nếu cây con tại node hiện tại giống subRoot → true
+        if (isSameTree(root, subRoot)) return true;
+        
+        // Nếu không, kiểm tra cây con trái hoặc phải
+        return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+    }
+    
+    // Hàm kiểm tra hai cây có giống nhau không
+    private boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p == null && q == null) return true;
+        if (p == null || q == null) return false;
+        if (p.val != q.val) return false;
+        
+        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
+}
+
+
+4.Merge Two Binary Trees dùng DFS recursion để duyệt đồng thời cả hai cây
+
+Tại mỗi bước:
+
+Nếu một node null thì trả về node còn lại
+
+Nếu cả hai node tồn tại thì tạo node mới với giá trị tổng, rồi đệ quy cho left và right
+
+-Trực tiếp biểu diễn quy tắc gộp
+
+Độ phức tạp O(n) thời gian, O(h) không gian (n là tổng số node, h là chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        // Nếu một node null thì trả về node còn lại
+        if (root1 == null) return root2;
+        if (root2 == null) return root1;
+        
+        // Nếu cả hai node tồn tại thì gộp giá trị
+        TreeNode merged = new TreeNode(root1.val + root2.val);
+        
+        // Đệ quy cho left và right
+        merged.left = mergeTrees(root1.left, root2.left);
+        merged.right = mergeTrees(root1.right, root2.right);
+        
+        return merged;
+    }
+}
+
+5. Two Sum IV - Input is a BST  có 2 cách là Inorder Traversal + Two Pointers và DFS + HashSet 
+
+Ta chọn Hashset
+
+Duyệt cây bằng DFS
+
+Với mỗi node kiểm tra xem (k - node.val) đã xuất hiện trong HashSet chưa
+
+Nếu có thì return true
+
+Nếu không thì thêm node.val vào HashSet và tiếp tục duyệt
+
+Ưu điểm: không cần mảng, chỉ duyệt một lần
+
+-Chỉ duyệt một lần tối ưu O(n) thời gian
+
+HashSet cho phép kiểm tra tồn tại trong O(1)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+import java.util.*;
+
+class Solution {
+    public boolean findTarget(TreeNode root, int k) {
+        Set<Integer> seen = new HashSet<>();
+        return dfs(root, k, seen);
+    }
+    
+    private boolean dfs(TreeNode node, int k, Set<Integer> seen) {
+        if (node == null) return false;
+        
+        // Nếu đã thấy k - node.val thì có cặp thỏa mãn
+        if (seen.contains(k - node.val)) return true;
+        
+        // Thêm node hiện tại vào HashSet
+        seen.add(node.val);
+        
+        // Duyệt tiếp cây con trái và phải
+        return dfs(node.left, k, seen) || dfs(node.right, k, seen);
+    }
+}
+
+6.Count Nodes Equal to Average of Subtree dùng DFS recursion để duyệt cây
+
+Với mỗi node ta cần biết:
+
+Tổng giá trị trong subtree
+
+Số lượng node trong subtree
+
+Từ đó tính trung bình và so sánh với giá trị node
+
+Trả về (sum, count) cho mỗi node để phục vụ tính toán
+
+-Cho phép ta vừa tính tổng vừa đếm số node trong một lần duyệt
+
+Độ phức tạp O(n) thời gian, O(h) không gian (n = số node, h = chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private int count = 0;
+    
+    public int averageOfSubtree(TreeNode root) {
+        dfs(root);
+        return count;
+    }
+    
+    // Hàm trả về [sum, count] của subtree
+    private int[] dfs(TreeNode node) {
+        if (node == null) return new int[]{0, 0};
+        
+        int[] left = dfs(node.left);
+        int[] right = dfs(node.right);
+        
+        int sum = left[0] + right[0] + node.val;
+        int numNodes = left[1] + right[1] + 1;
+        
+        // Kiểm tra điều kiện node.val == average
+        if (node.val == sum / numNodes) {
+            count++;
+        }
+        
+        return new int[]{sum, numNodes};
+    }
+}
+
+7.Đặt tên Resource bằng danh từ số nhiều vì trong REST API, URL đại diện cho một tập hợp (Collection) các tài nguyên
+
+-Ngay cả khi lấy một phần tử thì vẫn bắt đầu từ collection.
+
+GET /users/5
+GET /products/10
+DELETE /orders/20
+
+Không viết
+
+GET /user/5
+
+-Luôn dùng danh từ
+
+Luôn dùng số nhiều
+
+Không dùng động từ trong URL
+
+-Một resource có thể chứa các resource con đó là Subresource
+
+Lợi ích: Subresource giúp API rõ ràng, dễ hiểu, dễ mở rộng, phản ánh đúng mối quan hệ ngoài đời thực
+
+-REST API thường dùng hai Header quan trọng nhất là:
+ 
+*Content-Type
+
+Cho server biết dữ liệu client đang gửi thuộc định dạng gì("Body của request là JSON")
+
+*Accept
+
+Cho server biết client muốn nhận dữ liệu ở định dạng nào nghĩa là "Hãy trả kết quả dưới dạng JSON"
+
+-Nếu thiếu header thì Server có thể không hiểu dữ liệu, đọc sai dữ liệu, trả lỗi
+
+-Sử dụng Header giúp Client và Server hiểu nhau xử lý lỗi tốt hơn, hỗ trợ Versioning, hỗ trợ Cache, tuân thủ chuẩn HTTP
+
+-HTTP status code
+
+200 (OK): Có nghĩa là thành công được sử dụng khi lấy dữ liệu hoặc thực hiện yêu cầu thành công và server trả về dữ liệu.
+
+201 (Created): Có nghĩa là đã tạo thành công được sử dụng khi tạo mới một tài nguyên (ví dụ tạo User mới bằng POST)
+
+204 (No Content): Có nghĩa là thành công nhưng không có dữ liệu trả về thường dùng khi xóa dữ liệu hoặc cập nhật mà không cần trả về Response Body
+
+400 (Bad Request): Có nghĩa là yêu cầu không hợp lệ được sử dụng khi client gửi sai dữ liệu, thiếu trường bắt buộc hoặc sai định dạng JSON
+
+401 (Unauthorized): Có nghĩa là chưa được xác thực được sử dụng khi client chưa đăng nhập hoặc không gửi Token/API Key hợp lệ
+
+403 (Forbidden): Có nghĩa là bị từ chối truy cập được sử dụng khi client đã đăng nhập nhưng không có quyền truy cập tài nguyên
+
+404 (Not Found): Có nghĩa là không tìm thấy tài nguyên được sử dụng khi ID hoặc Resource không tồn tại
+
+405 (Method Not Allowed): Có nghĩa là phương thức HTTP không được phép được sử dụng khi client gọi sai HTTP Method (ví dụ dùng POST cho endpoint chỉ hỗ trợ GET)
+
+500 (Internal Server Error): Có nghĩa là lỗi phía Server được sử dụng khi server gặp lỗi ngoài ý muốn như Exception, lỗi Database hoặc chương trình bị crash
+
+503 (Service Unavailable): Có nghĩa là dịch vụ tạm thời không khả dụng được sử dụng khi server đang bảo trì hoặc quá tải, client nên thử lại sau
