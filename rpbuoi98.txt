@@ -1,0 +1,333 @@
+1.Minimum Absolute Difference in BST vì có tính chất inorder traversal  mảng tăng dần 
+
+Do đó khoảng cách nhỏ nhất chắc chắn nằm giữa hai phần tử liên tiếp trong mảng inorder
+
+Ta chỉ cần duyệt inorder lưu giá trị trước đó và tính chênh lệch với giá trị hiện tại
+
+Cập nhật kết quả nhỏ nhất
+
+-Tận dụng tính chất BST để tránh phải so sánh mọi cặp node (O(n²))
+
+Chỉ cần duyệt một lần tối ưu O(n) thời gian
+
+Không gian O(h) cho stack recursion (h là chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private Integer prev = null; // lưu giá trị node trước đó trong inorder
+    private int minDiff = Integer.MAX_VALUE;
+    
+    public int getMinimumDifference(TreeNode root) {
+        inorder(root);
+        return minDiff;
+    }
+    
+    private void inorder(TreeNode node) {
+        if (node == null) return;
+        
+        inorder(node.left);
+        
+        if (prev != null) {
+            minDiff = Math.min(minDiff, node.val - prev);
+        }
+        prev = node.val;
+        
+        inorder(node.right);
+    }
+}
+
+
+2.Leaf-Similar Trees dùng DFS để duyệt cây và thu thập các lá
+
+Lưu dãy lá của mỗi cây vào một danh sách
+
+So sánh hai danh sách
+
+-Dễ dàng duyệt toàn bộ cây và lấy lá theo thứ tự trái sang phải
+
+Độ phức tạp O(n) thời gian, O(n) không gian (n là số node)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+import java.util.*;
+
+class Solution {
+    public boolean leafSimilar(TreeNode root1, TreeNode root2) {
+        List<Integer> leaves1 = new ArrayList<>();
+        List<Integer> leaves2 = new ArrayList<>();
+        
+        dfs(root1, leaves1);
+        dfs(root2, leaves2);
+        
+        return leaves1.equals(leaves2);
+    }
+    
+    // Hàm DFS để lấy lá
+    private void dfs(TreeNode node, List<Integer> leaves) {
+        if (node == null) return;
+        
+        if (node.left == null && node.right == null) {
+            leaves.add(node.val); // node lá
+        }
+        
+        dfs(node.left, leaves);
+        dfs(node.right, leaves);
+    }
+}
+
+
+3.Cousins in Binary Tree dùng DFS hoặc BFS để duyệt cây.
+
+Với mỗi node ta cần biết:
+
+Cha của node
+
+Độ sâu của node
+
+Sau khi tìm được thông tin cho cả x và y kiểm tra điều kiện
+
+-Dùng DFS vì:
+
+Cho phép ta vừa tìm cha vừa tìm độ sâu trong một lần duyệt
+
+Độ phức tạp O(n) thời gian, O(h) không gian (n = số node, h = chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    // Lưu cha của node x và y
+    private TreeNode parentX = null, parentY = null;
+    // Lưu độ sâu của node x và y
+    private int depthX = -1, depthY = -1;
+    
+    public boolean isCousins(TreeNode root, int x, int y) {
+        // Duyệt cây để tìm thông tin cha và độ sâu của x, y
+        dfs(root, null, 0, x, y);
+        
+        // Cùng độ sâu nhưng cha khác nhau
+        return depthX == depthY && parentX != parentY;
+    }
+    
+    //Duyệt cây truyền thêm thông tin cha và độ sâu
+    private void dfs(TreeNode node, TreeNode parent, int depth, int x, int y) {
+        if (node == null) return; // node rỗng thì dừng
+        
+        // Nếu tìm thấy node x thì lưu cha và độ sâu
+        if (node.val == x) {
+            parentX = parent;
+            depthX = depth;
+        }
+        
+        // Nếu tìm thấy node y thì lưu cha và độ sâu
+        if (node.val == y) {
+            parentY = parent;
+            depthY = depth;
+        }
+        
+        // Duyệt tiếp cây con trái và phải
+        dfs(node.left, node, depth + 1, x, y);
+        dfs(node.right, node, depth + 1, x, y);
+    }
+}
+
+
+4.REST (Representational State Transfer) là một phong cách kiến trúc (Architectural Style) để thiết kế API
+
+REST quy định cách Client và Server giao tiếp thông qua HTTP bằng cách thao tác trên Resource (tài nguyên)
+
+REST là bộ nguyên tắc của API
+
+REST khác với Protocol
+
+-Mỗi dữ liệu được xem là một Resource
+
+Mỗi Resource có một URL riêng
+
+Client thao tác Resource thông qua HTTP Methods
+
+Server thường trả dữ liệu dưới dạng JSON
+
+Mỗi request đều độc lập (Stateless)
+
+-Resource là mọi dữ liệu mà API quản lý
+
+REST sử dụng URL để đại diện cho Resource
+
+Endpoint là địa chỉ URL mà Client gửi Request tới để thao tác Resource
+
+HTTP Method cho biết Client muốn làm gì với Resource
+
+-GET dùng để lấy dữ liệu từ Server
+
+Không thay đổi dữ liệu
+
+Idempotent
+
+Có thể Cache
+
+Có thể Bookmark
+
+Dữ liệu gửi qua URL
+
+-POST dùng để gửi dữ liệu lên Server nhằm tạo Resource mới
+
+Tạo dữ liệu
+
+Không Idempotent
+
+Dữ liệu nằm trong Body
+
+Server quyết định URL Resource mới
+
+-PUT dùng để thay thế toàn bộ Resource
+
+Nếu gửi thiếu trường dữ liệu thì trường đó có thể bị ghi đè hoặc mất
+
+Dùng PUT khi biết toàn bộ dữ liệu mới của Resource
+
+-PATCH dùng để cập nhật một phần Resource
+
+Chỉ gửi những trường cần thay đổi
+
+-Sự khác nhau của PUT và PATCH là:
+
+PUT thay thế toàn bộ còn PATCH là cập nhật một phần nhỏ
+
+PUT payload lớn còn PATCH thì payload nhỏ
+
+PUT dễ mất dữ liệu nếu thiếu field còn PATCH ít rủi ro hơn
+
+PUT idempotent còn PATCH thường idempotent nhưng phụ thuộc vào implement
+
+-Khác nhau của POST và PUT
+
+POST tạo mới còn PUT cập nhật hoặc tạo lại URL xác định
+
+POST là Server tạo URL còn PUT là Client biết URL
+
+POST không idempotent còn PUT có
+
+POST có thể tạo nhiều Resource còn PUT luôn dùng cùng Resource
+
+-Khác nhau của GET và POST
+
+GET là lấy dữ liệu còn POST là gửi
+
+GET Query String còn POST Reuquest Body
+
+GET có cache,bookmark,imdepotent được còn POST không
+
+-Một Request được gọi là Idempotent nếu gửi 100 lần vẫn cho kết quả cuối cùng giống nhau còn khác thì là không imdepotent
+
+-HTTP (HyperText Transfer Protocol) là giao thức truyền dữ liệu giữa Client và Server
+
+Không mã hóa dữ liệu
+
+Port 80
+
+Dữ liệu có thể bị đọc nếu bị chặn
+
+-HTTPS là HTTP kết hợp SSL/TLS để mã hóa dữ liệu
+
+Mã hóa dữ liệu
+
+Xác thực Website
+
+Port 443
+
+Bảo vệ Password
+
+Bảo vệ Token
+
+Bảo vệ thông tin cá nhân
+
+-SSL/TLS là giao thức mã hóa kết nối giữa Client và Server
+
+Chống nghe lén
+
+Chống sửa dữ liệu
+
+Xác minh Website
+
+-SOAP là Protocol có đặc điểm là 
+
+XML
+
+Quy tắc nghiêm ngặt
+
+Bảo mật mạnh
+
+Thường dùng trong Enterprise
+
+Dùng ở Mobile, Web, Public API
+
+-REST là Architectural Style có đặc điểm là
+
+JSON
+
+Nhẹ
+
+Nhanh
+
+Dễ dùng
+
+Phổ biến
+
+Dùng ở ngân hang, doanh nghiệp lớn
+
+-REST nhiều Endpoint và response cố định dùng API đơn giản, CRUD, Microservice
+
+-GraphQL một Endpoint client tự chọn dữ liệu cần lấy dùng Dashboard, mobile, social network, dữ liệu phức tạp
+
+-REST là cách thiết kế API quan tâm resource, URL, HTTP method nằm ở phía server
+
+-AJAX là kỹ thuật gửi request từ Browser mà không cần tải lại trang nằm ở phía Client
+
+-Trang web dùng AJAX gọi đến REST API và từ đó gửi về Database
+
