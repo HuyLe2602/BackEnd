@@ -1,0 +1,281 @@
+1.Binary Tree Tilt dùng DFS recursion để duyệt cây
+
+Với mỗi node, ta cần biết:
+
+Tổng giá trị của subtree trái
+
+Tổng giá trị của subtree phải
+
+Tilt của node = |sumLeft − sumRight|
+
+Cộng tilt vào kết quả toàn cục
+
+Trả về tổng subtree để phục vụ cho node cha
+
+-Cho phép ta vừa tính tổng subtree vừa cộng tilt trong một lần duyệt
+
+Độ phức tạp O(n) thời gian, O(h) không gian (n = số node, h = chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private int totalTilt = 0; // lưu tổng tilt của toàn bộ cây
+    
+    public int findTilt(TreeNode root) {
+        dfs(root); // duyệt cây và tính tilt
+        return totalTilt;
+    }
+    
+    // Hàm DFS trả về tổng giá trị của subtree
+    private int dfs(TreeNode node) {
+        if (node == null) return 0;
+        
+        // Tính tổng subtree trái và phải
+        int leftSum = dfs(node.left);
+        int rightSum = dfs(node.right);
+        
+        // Tilt của node hiện tại
+        int tilt = Math.abs(leftSum - rightSum);
+        totalTilt += tilt; // cộng vào kết quả toàn cục
+        
+        // Trả về tổng subtree (bao gồm node hiện tại)
+        return leftSum + rightSum + node.val;
+    }
+}
+
+
+2.Univalued Binary Tree dùng DFS recursion để duyệt toàn bộ cây
+
+Lấy giá trị của root làm chuẩn
+
+Với mỗi node kiểm tra xem giá trị có bằng giá trị chuẩn không
+
+Nếu có node nào khác thì return false
+
+Nếu duyệt hết mà không sai thì return true
+
+-Chỉ cần một lần duyệt cây
+
+Độ phức tạp O(n) thời gian, O(h) không gian (n = số node, h = chiều cao cây)
+
+-Chỉ cần một lần duyệt cây
+
+Độ phức tạp O(n) thời gian, O(h) không gian (n = số node, h = chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isUnivalTree(TreeNode root) {
+        // Lấy giá trị chuẩn từ root
+        int target = root.val;
+        // Gọi hàm DFS để kiểm tra toàn bộ cây
+        return dfs(root, target);
+    }
+    
+    // Hàm DFS kiểm tra từng node
+    private boolean dfs(TreeNode node, int target) {
+        if (node == null) return true; // node rỗng thì hợp lệ
+        
+        // Nếu giá trị node khác target thì không phải univalued
+        if (node.val != target) return false;
+        
+        // Kiểm tra tiếp cây con trái và phải
+        return dfs(node.left, target) && dfs(node.right, target);
+    }
+}
+
+3.Evaluate Boolean Binary Tree dùng DFS recursion để duyệt cây
+
+Nếu node là lá thì trả về giá trị boolean trực tiếp
+
+Nếu node là OR thì trả về evaluate(left) OR evaluate(right)
+
+Nếu node là AND thì trả về evaluate(left) AND evaluate(right)
+
+-Trực tiếp biểu diễn định nghĩa của bài toán
+
+Độ phức tạp O(n) thời gian, O(h) không gian (n = số node, h = chiều cao cây)
+
+-Code:
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean evaluateTree(TreeNode root) {
+        // Nếu node là lá thì giá trị 0 hoặc 1
+        if (root.left == null && root.right == null) {
+            return root.val == 1; // 1 thì true, 0 thì false
+        }
+        
+        // Đệ quy đánh giá cây con trái và phải
+        boolean leftVal = evaluateTree(root.left);
+        boolean rightVal = evaluateTree(root.right);
+        
+        // Nếu node là OR (val = 2) thì trả về left OR right
+        if (root.val == 2) {
+            return leftVal || rightVal;
+        }
+        
+        // Nếu node là AND (val = 3) thì trả về left AND right
+        return leftVal && rightVal;
+    }
+}
+
+
+4.Spring Boot là phần mở rộng (extension) của Spring Framework, không phải framework mới
+
+Mục tiêu:
+
+Tạo ứng dụng Spring nhanh hơn
+
+Giảm cấu hình lặp đi lặp lại (boilerplate configuration)
+
+-Spring Boot tự động cấu hình các Spring Bean khi phát hiện dependency trong pom.xml
+
+-Spring Boot tích hợp sẵn:
+
+Tomcat (mặc định)
+
+Ngoài ra còn hỗ trợ:
+
+Jetty
+
+Undertow
+
+Chỉ cần chạy ứng dụng không cần cài Tomcat riêng
+
+-Spring Boot sử dụng Opinionated Configuration ưu tiên cấu hình theo quy ước
+
+-Các tính năng quan trọng của Spring Boot
+
+Spring Boot Starters
+
+Auto Configuration
+
+Externalized Configuration
+
+Spring Boot Actuator
+
+Embedded Servlet Container
+
+-Spring Boot có 5 tính năng quan trọng:
+
+*Spring Boot Starters là các gói dependency được cấu hình sẵn.
+
+Mục đích:
+
+Tự thêm các thư viện cần thiết
+
+Tự quản lý version tương thích
+
+*Auto Configuration Spring Boot sẽ tự động cấu hình Bean tương ứng dựa trên các Starter đã thêm vào pom.xml
+
+*Externalized Configuration Cho phép tách cấu hình ra khỏi code
+
+Mỗi môi trường có thể dùng:
+
+Database khác
+
+Port khác
+
+Username/password khác
+
+Không cần sửa source code khi deploy
+
+*Spring Boot Actuator cung cấp sẵn các REST Endpoint để giám sát ứng dụng.
+
+Có thể xem:
+
+Health Check
+
+Bean
+
+URL Mapping
+
+Environment
+
+Configuration
+
+Metrics
+
+Phục vụ monitoring và quản trị ứng dụng khi chạy
+
+*Embedded Servlet Container là Spring Boot tích hợp sẵn server như:
+
+Tomcat (mặc định)
+
+Jetty
+
+Undertow
+
+Không cần:
+
+Download Tomcat, Cài Tomcat
+
+Deploy WAR lên Tomcat
+
+Chỉ cần:
+
+Run Application
+
+hoặc
+
+java -jar app.jar
+
+Ứng dụng sẽ tự chạy với Tomcat nhúng
+
+-So sánh Spring Framework và Spring Boot
+
+Spring Framework tự thêm nhiều dependency trong khi Spring Boot dùng Starter
+
+Spring Framework tự cấu hình bean còn Spring Boot dung Auto Configuaration
+
+Spring Framework tự cài Tomcat còn SpringBoot thì Embedded Tomcat
+
+Spring Framework Deploy file WAR còn SpringBoot chay trực tiếp file JAR
+
+Spỉng Framework quản lý version thủ công còn Spring Boot Starter tự quản lý version
+
