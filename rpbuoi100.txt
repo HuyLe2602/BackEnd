@@ -1,0 +1,349 @@
+1. Spring Boot Starter Parent làproject cha (parent project) được Spring Boot cung cấp
+
+Được tự động thêm vào pom.xml khi tạo project bằng Spring Initializr
+
+Mục đích:
+Cung cấp cấu hình mặc định (default configuration)
+
+Quản lý phiên bản (version) của các dependency
+
+Cấu hình sẵn các Maven Plugin
+
+-Các chức năng chính của Spring Boot Starter Parent là:
+
+Cung cấp cấu hình mặc định (Default Configuration)
+
+*Quản lý phiên bản Dependency
+
+*Spring Boot Starter Parent quản lý phiên bản của rất nhiều thư viện như: Spring Framework, Hibernate, Jakarta, Jackson (JSON), JUnit ...
+
+*Quản lý phiên bản Spring Boot Starters
+
+Điều này áp dụng cho tất cả các Starter như:
+
+spring-boot-starter-web
+
+spring-boot-starter-validation
+
+spring-boot-starter-thymeleaf
+
+spring-boot-starter-tomcat
+
+spring-boot-starter-web-services ...
+
+*Có thể Override (ghi đè) cấu hình mặc định
+
+Spring Boot Starter Parent cho phép thay đổi khi cần:
+
+Java Version
+
+Spring Framework Version
+
+Các dependency version khác
+
+2.Trong các ứng dụng Spring truyền thống (Spring MVC), lập trình viên phải tự cấu hình rất nhiều thành phần
+
+Khi tạo một dự án mới, các cấu hình này lại phải làm lại từ đầu gây:
+
+Tốn thời gian
+
+Dễ cấu hình sai
+
+Nhiều mã cấu hình lặp lại
+
+-Spring Boot Auto Configuration là tính năng tự động cấu hình (automatically configure) ứng dụng Spring dựa trên các dependency (JAR) có trong project
+
+Spring Boot sẽ tự nhận biết bạn đang sử dụng công nghệ nào và tự tạo các Bean/cấu hình cần thiết
+
+-Nguyên tắc:
+
+Thêm Starter Dependency rồi Spring Boot tự cấu hình các Bean tương ứng
+
+Spring Boot sẽ kiểm tra các dependency trong pom.xml
+
+Nếu phát hiện Starter nào nó sẽ tự động cấu hình các thành phần cần thiết
+
+-Lợi ích của Auto Configuration:
+
+Giảm rất nhiều mã cấu hình
+
+Không phải cấu hình lặp lại giữa các dự án
+
+Khởi tạo dự án nhanh hơn
+
+Giảm lỗi cấu hình
+
+Giúp lập trình viên tập trung vào viết logic nghiệp vụ thay vì cấu hình
+
+3.Spring Boot Auto Configuration được cài đặt trong thư viện:
+
+spring-boot-autoconfigure.jar
+
+Thư viện này chứa hàng trăm lớp Auto Configuration
+
+Spring Boot sẽ kích hoạt các lớp này tùy theo dependency được thêm vào project
+
+-Để xem Spring Boot tự cấu hình những gì, bật chế độ Debug trong:
+
+logging.level.org.springframework=DEBUG
+
+Sau khi chạy ứng dụng sẽ xuất hiện:
+
+CONDITIONS EVALUATION REPORT
+
+Report này cho biết Spring Boot đã cấu hình những gì và chưa cấu hình những gì
+
+-Report được chia thành 2 phần.
+
+Positive Matches là các Auto Configuration được kích hoạt
+
+Negative Matches là các Auto Configuration không được kích hoạt vì project chưa có dependency tương ứng
+
+-Ví dụ với spring-boot-starter-web
+
+Khi thêm:
+
+spring-boot-starter-web
+
+Spring Boot sẽ tự động cấu hình:
+
+DispatcherServlet
+
+Embedded Tomcat Server
+
+Default Error Page
+
+Jackson (chuyển đổi JSON thành Java Object)
+
+Tất cả đều được kích hoạt thông qua các lớp Auto Configuration trong spring-boot-autoconfigure.jar
+
+-Spring Boot dựa vào các dependency trong pom.xml để quyết định kích hoạt lớp Auto Configuration phù hợp
+
+Thêm Starter Dependency rồi sau đó Spring Boot kiểm tra Classpath tiếp theo tìm Auto Configuration tương ứng sau đó nếu điều kiện thỏa mãn (@Conditional...) thì tự động tạo Bean và cấu hình
+
+4.@SpringBootApplication là annotation quan trọng nhất trong Spring Boot
+
+Được đặt trên lớp chính (Main Application Class)
+
+Khi tạo project bằng Spring Initializr annotation này được thêm tự động
+
+Khi chạy ứng dụng annotation này thực hiện nhiều công việc "phía sau hậu trường"
+
+-@SpringBootApplication là sự kết hợp của 3 annotation:
+
+@EnableAutoConfiguration
+
+@ComponentScan
+
+@Configuration
+
+-Chức năng của từng annotation:
+
+*@EnableAutoConfiguration nhiệm vụ là kích hoạt Spring Boot Auto Configuration
+
+Spring Boot sẽ:
+
+Kiểm tra các dependency trong pom.xml
+
+Tự động cấu hình các Bean cần thiết
+
+*@Configuration nhiệm vụ là biến class thành Java Configuration Class
+
+Cho phép:
+
+Khai báo các Spring Bean bằng @Bean
+
+Import các lớp cấu hình khác
+
+*@ComponentScan có nhiệm vụ Spring sẽ tự động quét (scan):
+
+Package chứa Main Class.
+Tất cả các sub-package.
+
+Những class được đánh dấu:
+
+@Component
+
+@Service
+
+@Repository
+
+@Controller
+
+@RestController
+
+sẽ được tự động tạo thành Spring Bean
+
+-Vì sao dùng @SpringBootApplication
+
+Thay vì phải viết:
+
+@Configuration
+
+@EnableAutoConfiguration
+
+@ComponentScan
+
+chỉ cần:
+
+@SpringBootApplication
+
+Annotation này đã bao gồm cả 3 chức năng trên giúp mã nguồn ngắn gọn và dễ quản lý
+
+5. Implement Trie (Prefix Tree) mỗi node trong Trie lưu:
+
+Một mảng/Map các con (children)
+
+Cờ isEnd để đánh dấu node kết thúc một từ
+
+Khi insert duyệt từng ký tự tạo node nếu chưa có
+
+Khi search duyệt từng ký tự nếu thiếu node thì false, nếu đủ và isEnd = true thì true
+
+Khi startsWith duyệt từng ký tự nếu thiếu node →=thì false, nếu đủ thì true
+
+-Tìm kiếm prefix nhanh hơn so với duyệt toàn bộ danh sách từ
+
+Độ phức tạp O(L) cho mỗi thao tác (L = độ dài từ/prefix)
+
+-Code:
+
+class Trie {
+    // Định nghĩa node trong Trie
+    class TrieNode {
+        TrieNode[] children; // mảng con cho 26 chữ cái
+        boolean isEnd;       // đánh dấu kết thúc một từ
+        
+        TrieNode() {
+            children = new TrieNode[26];
+            isEnd = false;
+        }
+    }
+    
+    private TrieNode root;
+    
+    public Trie() {
+        root = new TrieNode(); // khởi tạo Trie rỗng
+    }
+    
+    // Thêm một từ vào Trie
+    public void insert(String word) {
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            int index = c - 'a'; // chuyển ký tự thành index
+            if (node.children[index] == null) {
+                node.children[index] = new TrieNode(); // tạo node mới nếu chưa có
+            }
+            node = node.children[index];
+        }
+        node.isEnd = true; // đánh dấu kết thúc từ
+    }
+    
+    // Kiểm tra từ có tồn tại trong Trie không
+    public boolean search(String word) {
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            int index = c - 'a';
+            if (node.children[index] == null) return false; // thiếu node thì không tồn tại
+            node = node.children[index];
+        }
+        return node.isEnd; // chỉ true nếu đúng là kết thúc từ
+    }
+    
+    // Kiểm tra có từ nào bắt đầu bằng prefix không
+    public boolean startsWith(String prefix) {
+        TrieNode node = root;
+        for (char c : prefix.toCharArray()) {
+            int index = c - 'a';
+            if (node.children[index] == null) return false; // thiếu node thì không tồn tại prefix
+            node = node.children[index];
+        }
+        return true; // duyệt hết prefix thành công thì tồn tại
+    }
+}
+
+
+6.Kth Largest Element in a Stream dùng Min-Heap (PriorityQueue) để lưu k phần tử lớn nhất
+
+Khi thêm số mới:
+
+Thêm vào heap
+
+Nếu heap có nhiều hơn k phần tử thì loại bỏ phần tử nhỏ nhất (root của min-heap)
+
+Khi đó phần tử nhỏ nhất trong heap chính là k-th largest
+
+-Heap cho phép thêm và loại bỏ phần tử trong O(log k)
+
+Chỉ cần lưu k phần tử lớn nhất thay vì toàn bộ luồng để tiết kiệm bộ nhớ
+
+-Code:
+
+import java.util.PriorityQueue;
+
+class KthLargest {
+    private PriorityQueue<Integer> minHeap; // Min-Heap để lưu k phần tử lớn nhất
+    private int k;
+    
+    public KthLargest(int k, int[] nums) {
+        this.k = k;
+        minHeap = new PriorityQueue<>(); // mặc định là min-heap
+        
+        // Thêm tất cả phần tử ban đầu vào heap
+        for (int num : nums) {
+            add(num);
+        }
+    }
+    
+    public int add(int val) {
+        // Thêm phần tử mới vào heap
+        minHeap.offer(val);
+        
+        // Nếu heap có nhiều hơn k phần tử thì loại bỏ phần tử nhỏ nhất
+        if (minHeap.size() > k) {
+            minHeap.poll();
+        }
+        
+        // Root của heap chính là k-th largest
+        return minHeap.peek();
+    }
+}
+
+7.Last Stone Weight dùng Max-Heap (PriorityQueue với comparator đảo ngược) để luôn lấy ra 2 viên nặng nhất
+
+Mỗi lần poll 2 viên tính kết quả nếu còn đá thì add lại vào heap
+
+Lặp cho đến khi heap rỗng hoặc còn 1 viên
+
+-Cho phép lấy nhanh 2 phần tử lớn nhất trong O(log n)
+
+-Code:
+
+import java.util.PriorityQueue;
+
+class Solution {
+    public int lastStoneWeight(int[] stones) {
+        // Tạo max-heap (PriorityQueue với comparator đảo ngược)
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
+        
+        // Thêm tất cả viên đá vào heap
+        for (int stone : stones) {
+            maxHeap.offer(stone);
+        }
+        
+        // Lặp cho đến khi còn <= 1 viên đá
+        while (maxHeap.size() > 1) {
+            int y = maxHeap.poll(); // viên nặng nhất
+            int x = maxHeap.poll(); // viên nặng nhì
+            
+            if (y != x) {
+                // Nếu khác nhau thì thêm viên mới có trọng lượng y - x
+                maxHeap.offer(y - x);
+            }
+            // Nếu bằng nhau thì cả hai biến mất và không thêm gì
+        }
+        
+        // Nếu còn 1 viên thì trả về trọng lượng nếu không thì trả về 0
+        return maxHeap.isEmpty() ? 0 : maxHeap.peek();
+    }
+}
