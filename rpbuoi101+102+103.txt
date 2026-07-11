@@ -1,0 +1,482 @@
+1.Binary Watch duyệt tất cả khả năng giờ (0–11) và phút (0–59)
+
+Với mỗi cặp (hour, minute) tính số bit bật (Integer.bitCount)
+
+Nếu tổng số bit bật = turnedOn rồi thêm vào kết quả
+
+-Không cần sinh tổ hợp phức tạp
+
+Giờ chỉ có 12 giá trị, phút chỉ có 60 giá trị nên tổng cộng 720 trường hợp
+
+-Code:
+
+import java.util.*;
+
+class Solution {
+    public List<String> readBinaryWatch(int turnedOn) {
+        List<String> result = new ArrayList<>();
+        
+        // Duyệt tất cả giờ (0–11)
+        for (int hour = 0; hour < 12; hour++) {
+            // Duyệt tất cả phút (0–59)
+            for (int minute = 0; minute < 60; minute++) {
+                // Tính số LED bật (bitCount)
+                int bits = Integer.bitCount(hour) + Integer.bitCount(minute);
+                
+                // Nếu đúng số LED cần bật thì thêm vào kết quả
+                if (bits == turnedOn) {
+                    // Định dạng phút luôn có 2 chữ số
+                    result.add(String.format("%d:%02d", hour, minute));
+                }
+            }
+        }
+        
+        return result;
+    }
+}
+
+
+2. Letter Case Permutation dùng DFS/backtracking để duyệt từng ký tự
+
+Nếu ký tự là số thì giữ nguyên
+
+Nếu ký tự là chữ thì tạo 2 nhánh chữ thường và chữ hoa
+
+Khi duyệt hết chuỗi thì thêm kết quả vào danh sách
+
+-Cho phép sinh tất cả tổ hợp một cách tự nhiên
+
+Độ phức tạp O(2^L) với L = số lượng chữ cái trong chuỗi
+
+-Code:
+
+import java.util.*;
+
+class Solution {
+    public List<String> letterCasePermutation(String s) {
+        List<String> result = new ArrayList<>();
+        // Gọi hàm backtracking bắt đầu từ index 0
+        backtrack(s.toCharArray(), 0, result);
+        return result;
+    }
+    
+    // Hàm backtracking: duyệt từng ký tự
+    private void backtrack(char[] chars, int index, List<String> result) {
+        // Nếu đã duyệt hết chuỗi thì thêm vào kết quả
+        if (index == chars.length) {
+            result.add(new String(chars));
+            return;
+        }
+        
+        // Nếu ký tự là chữ cái
+        if (Character.isLetter(chars[index])) {
+            // Nhánh 1: chữ thường
+            chars[index] = Character.toLowerCase(chars[index]);
+            backtrack(chars, index + 1, result);
+            
+            // Nhánh 2: chữ hoa
+            chars[index] = Character.toUpperCase(chars[index]);
+            backtrack(chars, index + 1, result);
+        } else {
+            // Nếu là số thì chỉ có một nhánh
+            backtrack(chars, index + 1, result);
+        }
+    }
+}
+
+
+3.Sum of All Subset XOR Totals duyệt tất cả subset bằng cách chọn hoặc bỏ từng phần tử
+
+Tính XOR của subset và cộng vào tổng
+
+Độ phức tạp O(2^n)
+
+-Mỗi bit trong kết quả XOR xuất hiện trong một nửa số subset
+
+Do đó tổng XOR của tất cả subset = (nums[0] XOR nums[1] XOR ... XOR nums[n-1]) * 2^(n-1)
+
+-Code:
+
+class Solution {
+    public int subsetXORSum(int[] nums) {
+        return dfs(nums, 0, 0);
+    }
+    
+    // Hàm DFS: index = vị trí hiện tại, currentXor = XOR của subset đang xét
+    private int dfs(int[] nums, int index, int currentXor) {
+        // Nếu đã duyệt hết mảng → trả về XOR của subset này
+        if (index == nums.length) {
+            return currentXor;
+        }
+        
+        // Nhánh 1: bỏ qua phần tử hiện tại
+        int without = dfs(nums, index + 1, currentXor);
+        
+        // Nhánh 2: chọn phần tử hiện tại (XOR thêm vào)
+        int with = dfs(nums, index + 1, currentXor ^ nums[index]);
+        
+        // Tổng kết quả từ cả hai nhánh
+        return without + with;
+    }
+}
+
+4.Summary Ranges duyệt mảng từ trái sang phải
+
+Dùng biến start để đánh dấu đầu khoảng
+
+Khi gặp số không liên tiếp thì kết thúc khoảng, thêm vào kết quả
+
+Sau đó đặt start = số hiện tại để bắt đầu khoảng mới
+
+Cuối cùng thêm khoảng cuối cùng vào kết quả
+
+-Chỉ cần duyệt một lần nên O(n)
+
+Không cần cấu trúc dữ liệu phức tạp
+
+-Code:
+
+import java.util.*;
+
+class Solution {
+    public List<String> summaryRanges(int[] nums) {
+        List<String> result = new ArrayList<>();
+        if (nums.length == 0) return result;
+        
+        // start đánh dấu đầu khoảng
+        int start = nums[0];
+        
+        for (int i = 1; i < nums.length; i++) {
+            // Nếu không liên tiếp → kết thúc khoảng
+            if (nums[i] != nums[i - 1] + 1) {
+                // Nếu start == nums[i-1] → chỉ có 1 số
+                if (start == nums[i - 1]) {
+                    result.add(String.valueOf(start));
+                } else {
+                    result.add(start + "->" + nums[i - 1]);
+                }
+                // Bắt đầu khoảng mới
+                start = nums[i];
+            }
+        }
+        
+        // Thêm khoảng cuối cùng
+        if (start == nums[nums.length - 1]) {
+            result.add(String.valueOf(start));
+        } else {
+            result.add(start + "->" + nums[nums.length - 1]);
+        }
+        
+        return result;
+    }
+}
+
+5.Assign Cookies sắp xếp cả hai mảng tăng dần
+
+Dùng 2 con trỏ:
+
+Một cho trẻ (i), một cho cookie (j)
+
+Nếu cookie đủ lớn (s[j] >= g[i]) thì cho trẻ đó tăng cả i và j
+
+Nếu không đủ thì thử cookie lớn hơn (j++)
+
+Kết quả = số trẻ được thỏa mãn
+
+-Cookie nhỏ nhất nên cho trẻ có greed nhỏ nhất
+
+Không cần thử mọi cách nên O(n log n) do sort
+
+-Code:
+
+import java.util.*;
+
+class Solution {
+    public int findContentChildren(int[] g, int[] s) {
+        // Sắp xếp greed factor và cookie size
+        Arrays.sort(g);
+        Arrays.sort(s);
+        
+        int i = 0; // con trỏ cho trẻ
+        int j = 0; // con trỏ cho cookie
+        
+        // Duyệt cho đến khi hết trẻ hoặc hết cookie
+        while (i < g.length && j < s.length) {
+            if (s[j] >= g[i]) {
+                // Cookie đủ lớn thì trẻ được thỏa mãn
+                i++;
+            }
+            // Dù thỏa mãn hay không thì chuyển sang cookie tiếp theo
+            j++;
+        }
+        
+        // i chính là số trẻ được thỏa mãn
+        return i;
+    }
+}
+
+6.Can Place Flowers duyệt qua từng ô trong flowerbed
+
+Nếu ô hiện tại trống (0) và cả hai ô bên cạnh (trái, phải) cũng trống hoặc không tồn tại thì có thể trồng hoa tại đây
+
+Mỗi lần trồng hoa thì giảm n đi 1
+
+Nếu n giảm về 0 thì return true
+
+Nếu duyệt hết mà n > 0 thì return false
+
+-Chỉ cần xét từng ô một lần.
+
+Không cần thử mọi cách tối ưu O(n)
+
+-Code:
+
+class Solution {
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        int len = flowerbed.length;
+        
+        for (int i = 0; i < len; i++) {
+            // Kiểm tra ô hiện tại có trống không
+            if (flowerbed[i] == 0) {
+                // Kiểm tra ô bên trái (nếu có) và ô bên phải (nếu có)
+                boolean leftEmpty = (i == 0) || (flowerbed[i - 1] == 0);
+                boolean rightEmpty = (i == len - 1) || (flowerbed[i + 1] == 0);
+                
+                // Nếu cả trái và phải đều trống thì trồng hoa tại đây
+                if (leftEmpty && rightEmpty) {
+                    flowerbed[i] = 1; // trồng hoa
+                    n--;              // giảm số hoa cần trồng
+                    
+                    if (n == 0) return true; // đủ hoa rồi thì return true
+                }
+            }
+        }
+        
+        // Nếu duyệt hết mà vẫn còn hoa chưa trồng thì return false
+        return n <= 0;
+    }
+}
+
+7. Lemonade Change dùng biến đếm số lượng tờ $5 và $10
+
+Khi khách trả:
+
+$5 tăng số lượng $5
+
+$10 cần trả lại $5 thì giảm số lượng $5 tăng số lượng $10
+
+$20 cần trả lại $15 thì ưu tiên dùng $10 + $5 (giữ nhiều $5 để trả lẻ sau) nếu không có thì dùng 3 tờ $5 nếu không đủ thì return false
+
+Duyệt hết thì return true
+
+-Ưu tiên dùng $10 trước khi dùng nhiều $5 thì giữ lại nhiều $5 cho các giao dịch sau
+
+Độ phức tạp O(n)
+
+-Code:
+
+class Solution {
+    public boolean lemonadeChange(int[] bills) {
+        int five = 0;  // số lượng tờ $5
+        int ten = 0;   // số lượng tờ $10
+        
+        for (int bill : bills) {
+            if (bill == 5) {
+                // Khách trả $5 thì không cần trả lại
+                five++;
+            } else if (bill == 10) {
+                // Khách trả $10 thì cần trả lại $5
+                if (five == 0) return false;
+                five--;
+                ten++;
+            } else { // bill == 20
+                // Khách trả $20 thì cần trả lại $15
+                if (ten > 0 && five > 0) {
+                    // Ưu tiên dùng $10 + $5
+                    ten--;
+                    five--;
+                } else if (five >= 3) {
+                    // Nếu không có $10 thì dùng 3 tờ $5
+                    five -= 3;
+                } else {
+                    // Không đủ tiền trả lại
+                    return false;
+                }
+            }
+        }
+        
+        return true; // tất cả giao dịch thành công
+    }
+}
+
+
+8.Maximize Sum Of Array After K Negations sắp xếp mảng tăng dần để dễ xử lý số âm
+
+Đổi dấu các số âm trước (vì đổi số âm thành dương sẽ tăng tổng)
+
+Nếu còn dư k sau khi hết số âm:
+
+Nếu k chẵn thì không ảnh hưởng (đổi đi đổi lại)
+
+Nếu k lẻ thì đổi dấu phần tử nhỏ nhất (vì đổi số nhỏ nhất sẽ giảm ít nhất)
+
+-Luôn ưu tiên đổi số âm thành dương để tăng tổng
+
+Nếu còn dư đổi số nhỏ nhất để giảm thiệt hại
+
+Độ phức tạp O(n log n) do sort
+
+-Code:
+
+import java.util.*;
+
+class Solution {
+    public int largestSumAfterKNegations(int[] nums, int k) {
+        //  Sắp xếp mảng tăng dần
+        Arrays.sort(nums);
+        
+        //  Đổi dấu các số âm trước
+        for (int i = 0; i < nums.length && k > 0; i++) {
+            if (nums[i] < 0) {
+                nums[i] = -nums[i];
+                k--;
+            }
+        }
+        
+        //  Nếu còn dư k, xử lý phần tử nhỏ nhất
+        Arrays.sort(nums); // sắp xếp lại để tìm phần tử nhỏ nhất
+        if (k % 2 == 1) {
+            nums[0] = -nums[0]; // đổi dấu phần tử nhỏ nhất
+        }
+        
+        //  Tính tổng
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        
+        return sum;
+    }
+}
+
+9.Apple Redistribution into Boxes tính tổng số táo cần chứa = sum(apple)
+
+Sắp xếp capacity[] giảm dần
+
+Chọn lần lượt các hộp có sức chứa lớn nhất cho đến khi tổng sức chứa ≥ tổng số táo
+
+Trả về số hộp đã chọn
+
+-Luôn chọn hộp lớn nhất trước để giảm số lượng hộp cần dùng
+
+Độ phức tạp: O(n log n) do sort
+
+-Code:
+
+import java.util.*;
+
+class Solution {
+    public int minimumBoxes(int[] apple, int[] capacity) {
+        // Tính tổng số táo
+        int totalApples = 0;
+        for (int a : apple) {
+            totalApples += a;
+        }
+        
+        // Sắp xếp capacity giảm dần
+        Arrays.sort(capacity);
+        
+        // Chọn hộp từ lớn nhất đến nhỏ nhất
+        int sumCapacity = 0;
+        int count = 0;
+        for (int i = capacity.length - 1; i >= 0; i--) {
+            sumCapacity += capacity[i];
+            count++;
+            if (sumCapacity >= totalApples) {
+                return count;
+            }
+        }
+        
+        return count; // trường hợp cần tất cả hộp
+    }
+}
+
+10.@RestController có chức năng đánh dấu một class là REST Controller
+
+Nhận HTTP Request
+
+Trả dữ liệu trực tiếp về client
+
+Không trả View (.jsp, .html)
+
+Nó tương đương:
+
+@Controller
+
+@ResponseBody
+
+-@GetMapping có chức năng ánh xạ HTTP GET Request
+
+Dùng để lấy dữ liệu và đọc dữ liệu
+
+-Spring Boot tự động chuyển Java Object thành JSON
+
+Response
+
+{
+  "id":1,
+  "name":"John",
+  "email":"john@gmail.com"
+}
+
+Quá trình này gọi là
+
+Serialization
+
+Spring Boot sử dụng thư viện
+
+Jackson
+
+để chuyển Object sang JSON
+
+-Nếu trả về
+
+List<User>
+
+Spring Boot sẽ tự chuyển thành
+
+[
+   {
+      ...
+   },
+   {
+      ...
+   }
+]
+
+-@PathVariable chức năng lấy dữ liệu từ URL
+
+-@RequestParam chức năng là lấy dữ liệu từ Query Parameter
+
+-PathVariable
+/products/10
+
+là chỉ định tài nguyên cụ thể
+
+-RequestParam
+/products?page=2
+
+là truyền tham số lọc hoặc tìm kiếm
+
+-@PostMapping chức năng là tạo dữ liệu mới
+
+-@RequestBody chức năng là chuyển JSON trong Request thành Java Object
+
+-@PutMapping chức năng cập nhật dữ liệu
+
+-@DeleteMapping chức năng xoá dữ liệu
+
+-ResponseEntity đây là lớp rất quan trọng nó cho phép điều khiển toàn bộ HTTP Response bao gồm Body, Status Code, Header
+
+-@RequestMapping chức năng là định nghĩa URL gốc (Base URL) cho Controller
+
