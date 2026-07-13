@@ -1,0 +1,213 @@
+1. Climbing Stairs dùng DP bottom-up với tối ưu bộ nhớ (chỉ dùng 2 biến thay vì mảng)
+
+-Tính từ nhỏ đến lớn không lặp lại
+
+Chỉ cần lưu 2 giá trị trước đó (f(n-1) và f(n-2))
+
+Độ phức tạp O(n) thời gian, O(1) bộ nhớ
+
+-Code:
+
+class Solution {
+    public int climbStairs(int n) {
+        // Trường hợp cơ bản
+        if (n == 1) return 1; // chỉ có 1 cách: bước 1
+        if (n == 2) return 2; // hai cách: (1+1) hoặc (2)
+        
+        // dp1 = f(n-2), dp2 = f(n-1)
+        int dp1 = 1; // f(1)
+        int dp2 = 2; // f(2)
+        
+        // Tính từ bậc 3 đến n
+        for (int i = 3; i <= n; i++) {
+            int current = dp1 + dp2; // f(i) = f(i-1) + f(i-2)
+            dp1 = dp2;               // cập nhật f(n-2)
+            dp2 = current;           // cập nhật f(n-1)
+        }
+        
+        // Kết quả cuối cùng là f(n)
+        return dp2;
+    }
+}
+
+
+2.Min Cost Climbing Stairs  tại mỗi bậc thang, chi phí để đến đó bằng chi phí của bậc đó cộng với min(chi phí đến bậc trước, chi phí đến bậc trước nữa)
+
+Công thức:
+
+dp[i] = cost[i] + min(dp[i-1], dp[i-2])
+
+-Tính từ nhỏ đến lớn, không lặp lại
+
+Chỉ cần lưu 2 giá trị trước đó (dp[i-1] và dp[i-2])
+
+Độ phức tạp O(n) thời gian, O(1) bộ nhớ
+
+-Code:
+
+class Solution {
+    public int minCostClimbingStairs(int[] cost) {
+        int n = cost.length;
+        
+        // Nếu chỉ có 2 bậc → chọn chi phí nhỏ hơn
+        if (n == 2) return Math.min(cost[0], cost[1]);
+        
+        // dp1 = chi phí đến bậc i-2, dp2 = chi phí đến bậc i-1
+        int dp1 = cost[0];
+        int dp2 = cost[1];
+        
+        // Tính từ bậc thứ 2 trở đi
+        for (int i = 2; i < n; i++) {
+            int current = cost[i] + Math.min(dp1, dp2); // công thức DP
+            dp1 = dp2;   // cập nhật dp[i-2]
+            dp2 = current; // cập nhật dp[i-1]
+        }
+        
+        // Kết quả là min(dp[n-1], dp[n-2])
+        return Math.min(dp1, dp2);
+    }
+}
+
+
+3.N-th Tribonacci Number dãy Tribonacci được định nghĩa:
+
+T0 = 0, T1 = 1, T2 = 1
+
+Tn = Tn-1 + Tn-2 + Tn-3 (với n ≥ 3)
+
+-Tính từ nhỏ đến lớn, không lặp lại
+
+Chỉ cần lưu 3 giá trị trước đó (Tn-1, Tn-2, Tn-3)
+
+Độ phức tạp O(n) thời gian, O(1) bộ nhớ
+
+-Code:
+
+class Solution {
+    public int tribonacci(int n) {
+        // Trường hợp cơ bản
+        if (n == 0) return 0;
+        if (n == 1 || n == 2) return 1;
+        
+        // Khởi tạo 3 giá trị đầu tiên
+        int t0 = 0; // T0
+        int t1 = 1; // T1
+        int t2 = 1; // T2
+        
+        // Tính từ T3 đến Tn
+        for (int i = 3; i <= n; i++) {
+            int current = t0 + t1 + t2; // công thức Tn = Tn-1 + Tn-2 + Tn-3
+            t0 = t1; // cập nhật Tn-3
+            t1 = t2; // cập nhật Tn-2
+            t2 = current; // cập nhật Tn-1
+        }
+        
+        // Kết quả cuối cùng là Tn
+        return t2;
+    }
+}
+
+
+4.Single Number dùng toán tử XOR 
+
+Với bất kỳ số a ta có: a ^ a = 0 và a ^ 0 = a
+
+Nếu ta XOR tất cả phần tử trong mảng:
+
+Các số xuất hiện 2 lần sẽ triệt tiêu nhau (trở thành 0)
+
+Chỉ còn lại số xuất hiện 1 lần
+
+-Thời gian O(n) (duyệt một lần)
+
+Không gian O(1) (chỉ cần một biến)
+
+-Code:
+
+class Solution {
+    public int singleNumber(int[] nums) {
+        int result = 0; // biến lưu kết quả
+        
+        // Duyệt qua toàn bộ mảng
+        for (int num : nums) {
+            result ^= num; // XOR với từng phần tử
+        }
+        
+        // Sau khi duyệt xong, result chính là số xuất hiện 1 lần
+        return result;
+    }
+}
+
+5. Number of 1 Bits dùng toán tử bitwise và dịch bit
+
+Mỗi lần kiểm tra bit cuối cùng (n & 1)
+
+Nếu bằng 1 thì tăng biến đếm.
+
+Sau đó dịch phải (n >> 1) để kiểm tra bit tiếp theo
+
+Lặp cho đến khi n = 0
+
+-Duyệt từng bit của số
+
+Không cần công thức phức tạp chỉ cần hiểu rằng:
+
+n & 1 cho biết bit cuối cùng là 0 hay 1
+
+n >> 1 dịch sang phải để kiểm tra bit tiếp theo
+
+Độ phức tạp O(32) vì số nguyên có tối đa 32 bit
+
+-Code:
+
+class Solution {
+    public int hammingWeight(int n) {
+        int count = 0; // biến đếm số bit 1
+        
+        // Lặp cho đến khi n = 0
+        while (n != 0) {
+            // Kiểm tra bit cuối cùng
+            if ((n & 1) == 1) {
+                count++; // nếu là 1 thì tăng biến đếm
+            }
+            // Dịch phải để kiểm tra bit tiếp theo
+            n = n >>> 1; // dùng >>> để dịch không dấu
+        }
+        
+        return count; // trả về số lượng bit 1
+    }
+}
+
+
+6.Counting Bits  dùng Dynamic Programming dựa trên quy luật bit
+
+Công thức:
+
+ans[i] = ans[i >> 1] + (i & 1)
+
+Số bit 1 của i bằng số bit 1 của i/2 cộng thêm 1 nếu i là số lẻ
+
+-Tận dụng kết quả đã tính trước đó
+
+Mỗi số chỉ cần O(1) để tính
+
+Tổng thời gian O(n)
+
+-Code:
+
+class Solution {
+    public int[] countBits(int n) {
+        int[] ans = new int[n + 1]; // mảng kết quả
+        
+        // ans[0] = 0 vì số 0 không có bit 1
+        for (int i = 1; i <= n; i++) {
+            // ans[i >> 1] là số bit 1 của i/2
+            // (i & 1) kiểm tra xem i có phải số lẻ không (bit cuối = 1)
+            ans[i] = ans[i >> 1] + (i & 1);
+        }
+        
+        return ans;
+    }
+}
+
+7. Cài đặt maven cho spring boot + getmapping  +tạo javabean và ánh xạ bằng getmapping
